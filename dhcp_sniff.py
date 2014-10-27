@@ -12,15 +12,28 @@ import sys
 conf.checkIPaddr = False
 
 # Set up the interface
-
-conf.iface="en1" #set this as the interface of the server
-
 fam,hw = get_if_raw_hwaddr(conf.iface)
 
-dhcp_discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+#dhcp_discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+#dhcp_discover =  Ether(src=hw,dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=RandString(12,'0123456789abcdef'))/DHCP(options=[("message-type","discover"),"end"])
 
+#VM eth1
+#dhcp_discover =  Ether(src=hw,dst="0a:00:27:00:00:00")/IP(src="0.0.0.0",dst="192.168.56.2")/UDP(sport=68,dport=67)/BOOTP(chaddr=RandString(12,'0123456789abcdef'))/DHCP(options=[("message-type","discover"),"end"])
+
+
+#broadcast
+#dhcp_discover =  Ether(src=hw,dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+
+
+#Localhost 8067
+dhcp_discover =  Ether(src=hw,dst="00:00:00:00:00:00")/IP(src="0.0.0.0",dst="127.0.0.1")/UDP(sport=68,dport=8067)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+
+dhcp_discover.show()
 #print("Press Ctrl-C after several seconds...", fd=sys.stderr)
 ans, unans = srp(dhcp_discover, multi=True, timeout=5)
+print("packets sent")
+a = sniff(filter="port 68 or port 67", count=1)
+a.summary()
 
 if len(ans) == 0:
     print("No DHCP offers received", file=sys.stderr)
