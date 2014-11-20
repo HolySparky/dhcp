@@ -12,7 +12,7 @@ import sys
 conf.checkIPaddr = False
 
 # Set up the interface
-fam,hw = get_if_raw_hwaddr(conf.iface)
+#fam,hw = get_if_raw_hwaddr(conf.iface)
 
 #dhcp_discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
 #dhcp_discover =  Ether(src=hw,dst="ff:ff:ff:ff:ff:ff")/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=RandString(12,'0123456789abcdef'))/DHCP(options=[("message-type","discover"),"end"])
@@ -29,7 +29,7 @@ fam,hw = get_if_raw_hwaddr(conf.iface)
 #dhcp_discover =  Ether(src=hw,dst="00:00:00:00:00:00")/IP(src="0.0.0.0",dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
 
 #IP packet rather than ethernet packet
-dhcp_discover =  IP(dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+dhcp_discover =  IP(dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr="e4:ce:8f:32:80:90")/DHCP(options=[("message-type","discover"),"end"])
 dhcp_discover.show()
 #print("Press Ctrl-C after several seconds...", fd=sys.stderr)
 #ans, unans = srp(dhcp_discover, multi=True, timeout=5)
