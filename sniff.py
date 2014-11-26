@@ -33,23 +33,25 @@ dhcp_discover =  IP(dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr="
 dhcp_discover.show()
 #print("Press Ctrl-C after several seconds...", fd=sys.stderr)
 #ans, unans = srp(dhcp_discover, multi=True, timeout=5)
-send(dhcp_discover)
-print("packets sent")
-a = sniff(filter="port 68 or port 67", count=1)
-a.summary()
+ans, unans = sr1(dhcp_discover)
 
-if len(ans) == 0:
-    print("No DHCP offers received", file=sys.stderr)
-else:
-    print("DHCP offers received:")
-    for pair in ans:
-        p = pair[1]
-        d = p[DHCP]
-        print("MAC: {0}, Server IP: {1}, Offer IP: {2}\n    Mask: {3}, Router: {4}, Domain: {5}".format(
-            p[Ether].src,
-            p[IP].src,
-            p[BOOTP].yiaddr,
-            filter(lambda x: x[0] == 'subnet_mask', d.options)[0][1],
-            filter(lambda x: x[0] == 'router', d.options)[0][1],
-            filter(lambda x: x[0] == 'domain', d.options)[0][1],
-            ))
+print("packets sent")
+print(ans)
+#a = sniff(filter="port 68 or port 67", count=1)
+#a.summary()
+
+#if len(ans) == 0:
+#    print("No DHCP offers received", file=sys.stderr)
+#else:
+#    print("DHCP offers received:")
+#    for pair in ans:
+#        p = pair[1]
+#        d = p[DHCP]
+#        print("MAC: {0}, Server IP: {1}, Offer IP: {2}\n    Mask: {3}, Router: {4}, Domain: {5}".format(
+#            p[Ether].src,
+#            p[IP].src,
+#            p[BOOTP].yiaddr,
+#            filter(lambda x: x[0] == 'subnet_mask', d.options)[0][1],
+#            filter(lambda x: x[0] == 'router', d.options)[0][1],
+#            filter(lambda x: x[0] == 'domain', d.options)[0][1],
+#            ))
