@@ -9,7 +9,11 @@ conf.checkIPaddr = False
 print("------Begin:")
 a=IP()
 a.show()
- 
+
+dhcp_discover = IP(dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr="e4:ce:8f:32:80:90")/DHCP(options=[("message-type","discover"),"end"])
+
+dhcp_discover.show()
+
 import os
 ret = os.system("ifconfig eth0 promisc")
 if ret != 0:
@@ -24,7 +28,9 @@ class DHCP_test(object):
  
     def build_disc(self):
         # Build DHCP Discovery Packet
-        self.dhcp_disc = Ether(src = self.hw, dst = "ff:ff:ff:ff:ff:ff")/IP(src = "0.0.0.0", dst ="255.255.255.255")/UDP(sport = 68, dport = 67)/BOOTP(chaddr = self.hw)/DHCP(options = [("message-type", "discover"), "end"])
+        #self.dhcp_disc = Ether(src = self.hw, dst = "ff:ff:ff:ff:ff:ff")/IP(src = "0.0.0.0", dst ="255.255.255.255")/UDP(sport = 68, dport = 67)/BOOTP(chaddr = self.hw)/DHCP(options = [("message-type", "discover"), "end"])
+
+        self.dhcp_disc = IP(dst="202.120.32.22")/UDP(sport=68,dport=8067)/BOOTP(chaddr=self.hw)/DHCP(options=[("message-type","discover"),"end"])
  
         # Setting Xid for DHCP Discovery Packet
         self.dhcp_disc[BOOTP].xid = 123456 
@@ -35,11 +41,7 @@ class DHCP_test(object):
  
     def build_req(self):
         # Build DHCP Request Packet
-        self.dhcp_request = Ether(src = self.hw, dst = "ff:ff:ff:ff:ff:ff")/
-                    IP(src = "0.0.0.0", dst = "255.255.255.255")/
-                        UDP(sport = 68, dport = 67)/
-                    BOOTP(chaddr = self.hw)/
-                    DHCP(options = [("message-type", "request")])
+        self.dhcp_request = Ether(src = self.hw, dst = "ff:ff:ff:ff:ff:ff")/IP(src = "0.0.0.0", dst = "255.255.255.255")/UDP(sport = 68, dport = 67)/BOOTP(chaddr = self.hw)/DHCP(options = [("message-type", "request")])
         print("--------req:")
         self.dhcp_request.show()
  
@@ -51,7 +53,10 @@ class DHCP_test(object):
  
         dhcp_request = self.build_req()
  
-        ans_for_disc, unans_for_disc = srp(dhcp_disc)
+        #ans_for_disc, unans_for_disc = srp(dhcp_disc)
+
+        ans_for_disc, unans_for_disc = sr(dhcp_disc)
+        print("----------------------------------packet disc sent")
  
         # Finding DHCP Offer Packet
         for offer in ans_for_disc:
@@ -73,7 +78,7 @@ class DHCP_test(object):
             dhcp_request[DHCP].options.append(("requested_addr", str(offer[1][BOOTP].yiaddr)))
             dhcp_request[DHCP].options.append(("server_id", str(server_id)))
             dhcp_request[DHCP].options.append(("hostname", "Dell Laptop E5400"))
-            dhcp_request[DHCP].options.append(("param_req_list", b'x01x1c�2x03x0fx06x77x0cx2cx2fx1ax79x2a'))
+            dhcp_request[DHCP].options.append(("param_req_list", b'x01x1cx02x03x0fx06x77x0cx2cx2fx1ax79x2a'))
             dhcp_request[DHCP].options.append("end")
  
         # Setting Xid for DHCP Request Packet, Xid should be same with DHCP Discovery Packet
